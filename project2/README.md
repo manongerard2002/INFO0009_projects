@@ -1,0 +1,105 @@
+# BD projet2
+
+| Criteria                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Weight                       | Score (on 5):<br>0) Non-existent<br>1) Insufficient<br>2) Less than adequate<br>3) Adequate<br>4) Good<br>5) Excellent<br>6) Exceeds expectations | Feedback (main points)                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Write a script to initialize the database (creation of tables) on a MySQL server from the data files in the appendix. The filling can be done table by table manually (INSERT) or by loading the files (LOAD).                                                                                                                                                                                                                                                                                                                      | 1                            | 6                                                                                                                                                 | Bon usage de LOAD.<br>Checks au niveau du schéma: ++!                                                                                                                                                                                                                                                                                                                                              |
+| For each table in the list, enable the selection and display of its tuples by constraining the value of one or more of their fields. These constraints are limited to containment constraints for variables that are strings (name, for example), and equality constraints for fields that are numbers or dates. The tables are: CLIENT, EMPLOYEE, LOCATION, EVENT, SONG, and CD.                                                                                                                                                   | 2                            | 5                                                                                                                                                 | Le SELECT TABLE_NAME ... n'était pas nécessaire. Pourquoi avez-vous fait ceci? Il y aurait eu une raison si vous avez décidé de générer des formulaires "on the fly".                                                                                                                                                                                                                              |
+| 1) A page where you can add new locations. Ideally, you do not need to provide an ID. That page should also give you the possibility to select an existing location. After selecting a location, you can update or delete its information. One should not be able to delete locations that have been booked.                                                                                                                                                                                                                        | 2                            | 3                                                                                                                                                 | Plusieurs opérations, mais sans gestion des transactions.                                                                                                                                                                                                                                                                                                                                          |
+| 2) A page where you can select a CD. Once you select a CD, you can select an existing song or add new songs. If an existing song is selected, one should be able to modify or delete it. If one deletes a song appearing in one or more playlists, that song is removed from the playlist.                                                                                                                                                                                                                                          | 2                            | 4                                                                                                                                                 | Attention. Je peux "chipoter" vos formulaires et la logique de votre code "pense" que tout va bien:<br>"Warning: gmdate() expects parameter 2 to be integer, string given in /var/www/html/modif_CD.php on line 66<br>La chanson a été ajoutée avec succès!"                                                                                                                                       |
+| 3) This page contains a dashboard for events. Events are ordered by date (most recent first) and alphabetically by name (from A to Z). You show their status (“PAST”, “TODAY,” and “FUTURE”) and cost. Costs include a flat rate of 1500 EUR for organizing the vent.                                                                                                                                                                                                                                                               | 2                            | 2                                                                                                                                                 | Trois requêtes au lieu d'une (le statut n'est pas calculé dans la requête) + problèmes de transactions (e.g., deux opérations : une avant minuit et l'autre après).                                                                                                                                                                                                                                |
+| 4) A dashboard of the availability of CDs. For each date on which an event takes place, you display the CDs, their number of copies, and the number of copies used for that date. There are also dropdown lists where you choose the attribute and direction of sorting. By default, the table is sorted by date in descending order.                                                                                                                                                                                               | 2                            | 4                                                                                                                                                 | Vous avez couvert alors des cas avec des requêtes redondantes ; cela aurait pu être fait de manière plus élégante.<br>(SELECT \* FROM CD) AS T3 n'est pas nécessaire! CD AS T3 suffit.                                                                                                                                                                                                             |
+| 5) A page where you can select an event and complete or update its information. One can only complete or update the information on upcoming events. Make sure that you respect that the database remains coherent. There is only one job per day for each DJ and event planner, and the CDs must be available.                                                                                                                                                                                                                      | 3                            | 3                                                                                                                                                 | Gestion des transactions n'est pas présente: -2<br>Vous êtes très défensives, mais vous risquez d'avoir deux réservations du dernier CD si deux personnes utilisent ce script.                                                                                                                                                                                                                     |
+| 6) A dashboard for CDs. You display a table in which you present information on the total, min, max, and average duration of songs on that CD. You also include how many times its songs are included in playlists (if a song is included on multiple playlists, then you count that song multiple times). Finally, also find all the genres that are related to that CD. A CD may be related to multiple genres not only via the songs but also via the genre hierarchy. You can use GROUP_CONCAT to create one value for each CD. | 3                            | 2                                                                                                                                                 | Boucles avec des requêtes --> pas efficace et la gestion de transactions est nécessaire. Il est possible de le faire en une requête. La requête interne n'utilise pas la récursivité (ensemble fixe d'union) et s'appuie sur des requêtes "idiotes":<br>SELECT CD_NUMBER FROM CONTAINS GROUP BY CD_NUMBER<br>\= SELECT DISTINCT CD_NUMBER FROM CONTAINS et cette partie n'est même pas nécessaire. |
+| Document: A description of the architecture of your website.                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | 1                            | 5                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Document: A description of the operations you must perform to initialize the database from the scripts you have submitted.                                                                                                                                                                                                                                                                                                                                                                                                          | 1                            | 5                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                    |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Bonus group self-assessment? | FALSE                                                                                                                                             | To be determined                                                                                                                                                                                                                                                                                                                                                                                   |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Grade:                       | 14.1                                                                                                                                              |
+
+## Getting started
+
+To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+
+Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+
+## Add your files
+
+- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+
+```
+cd existing_repo
+git remote add origin https://gitlab.uliege.be/Manon.Gerard/bd-projet2.git
+git branch -M main
+git push -uf origin main
+```
+
+## Integrate with your tools
+
+- [ ] [Set up project integrations](https://gitlab.uliege.be/Manon.Gerard/bd-projet2/-/settings/integrations)
+
+## Collaborate with your team
+
+- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
+- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
+- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
+- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
+- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+
+## Test and Deploy
+
+Use the built-in continuous integration in GitLab.
+
+- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
+- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
+- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
+- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
+- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+
+***
+
+# Editing this README
+
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+
+## Suggestions for a good README
+Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+
+## Name
+Choose a self-explaining name for your project.
+
+## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+
+## Badges
+On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+
+## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+
+## Installation
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+
+## Roadmap
+If you have ideas for releases in the future, it is a good idea to list them in the README.
+
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
+
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
+
+## License
+For open source projects, say how it is licensed.
+
+## Project status
+If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
